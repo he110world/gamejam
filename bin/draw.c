@@ -1,5 +1,4 @@
 #include <GL/gl.h>
-#include <SDL/SDL.h>
 
 extern int keystat[1000];
 extern int mousestat[10];
@@ -68,4 +67,3 @@ int drawGLScene( GLvoid )
 	glTexture( 0 );
     return( 0 );
 }
-

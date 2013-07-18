@@ -20,7 +20,7 @@
 	THE SOFTWARE.
 */
 
-#include <FileWatcher/FileWatcherWin32.h>
+#include <FileWatcherWin32.h>
 
 #if FILEWATCHER_PLATFORM == FILEWATCHER_PLATFORM_WIN32
 
