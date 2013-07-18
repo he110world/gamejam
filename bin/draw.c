@@ -1,3 +1,4 @@
+#if 0
 #include <GL/gl.h>
 
 extern int keystat[1000];
@@ -67,3 +68,10 @@ int drawGLScene( GLvoid )
 	glTexture( 0 );
     return( 0 );
 }
+#else
+int drawGLScene( GLvoid )
+{
+	int i = 0;
+	return 0;
+}
+#endif

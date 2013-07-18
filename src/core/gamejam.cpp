@@ -390,6 +390,9 @@ int recompile()
 	tcc_add_symbol(s, "yres", &yres);
 
 	free( program );
+	
+	tcc_add_library_path(s,".");
+	
 	/* relocate the code */
 	if (tcc_relocate(s, TCC_RELOCATE_AUTO) < 0)
 		return 1;
@@ -482,6 +485,8 @@ int main(int argc, char **argv)
 #endif
 
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 
 	/* initialize OpenGL */
 	initGL( );
