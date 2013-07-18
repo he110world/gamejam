@@ -46,6 +46,7 @@ int keystat[256];
 int mousestat[10];
 int mousex, mousey, mousexr, mouseyr;
 int recompile();
+int scratchpad[10000];
 
 SDL_Window* displayWindow;
 SDL_Renderer* displayRenderer;
@@ -277,6 +278,16 @@ static void *loadTexture_cb(void *url)
 	return NULL;
 }
 
+void printstr( const char* str )
+{
+	printf("%s\n", str);
+}
+
+void printint( int i )
+{
+	printf("%i\n", i);
+}
+
 void glTexture( const char* texname )
 {
 	// disable texture
@@ -376,19 +387,24 @@ int recompile()
 
 	int n;
 	tcc_set_error_func(s, &n, err);
-	if (tcc_compile_string(s, program) == -1)
-		return 1;
 
-	tcc_add_symbol(s, "keystat", keystat);
-	tcc_add_symbol(s, "mousestat", mousestat);
+	tcc_add_symbol(s, "keystat", &keystat);
+	tcc_add_symbol(s, "mousestat", &mousestat);
 	tcc_add_symbol(s, "mousex", &mousex);
 	tcc_add_symbol(s, "mousey", &mousey);
 	tcc_add_symbol(s, "mousexr", &mousexr);
 	tcc_add_symbol(s, "mouseyr", &mouseyr);
-	tcc_add_symbol(s, "glTexture", (void*)glTexture);	
 	tcc_add_symbol(s, "xres", &xres);
 	tcc_add_symbol(s, "yres", &yres);
+	tcc_add_symbol(s, "scratchpad", &scratchpad);
 
+	tcc_add_symbol(s, "glTexture", (void*)glTexture);	
+	tcc_add_symbol(s, "printstr", (void*)printstr);	
+	tcc_add_symbol(s, "printint", (void*)printint);	
+
+	if (tcc_compile_string(s, program) == -1)
+		return 1;
+	
 	free( program );
 	
 	tcc_add_library_path(s,".");
@@ -573,7 +589,11 @@ int main(int argc, char **argv)
 		//if ( isActive )
 		{
 			watcher->update();
-			drawGLScene( );
+
+			if(drawGLScene)
+			{
+				drawGLScene( );
+			}
 			/* Draw it to the screen */
 			//SDL_GL_SwapBuffers( );
 			SDL_RenderPresent(displayRenderer);

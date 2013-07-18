@@ -6,6 +6,7 @@ extern int mousestat[10];
 extern int mousex, mousey, mousexr, mouseyr;
 extern void glBindTexture2D( const char* texname );
 extern int xres, yres;
+extern int scratchpad[10000];
 
 typedef struct Global_s
 {
@@ -69,9 +70,25 @@ int drawGLScene( GLvoid )
     return( 0 );
 }
 #else
+
+extern int keystat[1000];
+extern int mousestat[10];
+extern int mousex, mousey, mousexr, mouseyr; 
+extern int xres, yres;
+extern int scratchpad[10000];
+
+//extern void printint(int i);
+//extern void printstr(const char* str);
+int kkk=111;
+
 int drawGLScene( GLvoid )
 {
 	int i = 0;
+	int j = mousex;
+	 //scratchpad[0]=123;
+	 printint(scratchpad[0]);
+	//printstr("fuck you");
+	//printint(kkk);
 	return 0;
 }
 #endif
