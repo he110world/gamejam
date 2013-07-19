@@ -94,7 +94,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="1"
+			CharacterSet="2"
 			ManagedExtensions="1"
 			WholeProgramOptimization="1"
 			>
@@ -115,6 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\..\src\core;..\..\src\filewatcher;..\..\include;..\..\include\SDL"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				WarningLevel="3"
@@ -131,9 +132,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(NoInherit)"
+				AdditionalDependencies="tcc.lib libcurl.lib sdl2.lib SDL2main.lib pthreadVC2.lib libEGL.lib libGLESv2.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool

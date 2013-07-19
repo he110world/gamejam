@@ -71,6 +71,8 @@ int update( GLvoid )
 }
 #else
 
+//#include <stdio.h>
+
 extern int keystat[1000];
 extern int mousestat[10];
 extern int mousex, mousey, mousexr, mouseyr; 
@@ -83,10 +85,10 @@ int kkk=111;
 
 int update()
 {
-	int i = 0;
+	int i = 1;
 	int j = mousex;
 	 //scratchpad[0]=123;
-	 printint(j);
+	 printf("%i\n",j);
 	//printstr("fuck you");
 	//printint(kkk);
 	return 0;
