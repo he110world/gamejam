@@ -72,7 +72,6 @@ int update( GLvoid )
 #else
 
 //#include <stdio.h>
-
 extern int keystat[1000];
 extern int mousestat[10];
 extern int mousex, mousey, mousexr, mouseyr; 
@@ -83,14 +82,13 @@ extern void clearColor( float r, float g, float b, float a );
 //extern void printint(int i);
 //extern void printstr(const char* str);
 int kkk=111;
-
 int update()
 {
 	int i = 1;
 	int j = mousex;
 	 //scratchpad[0]=123;
 	 printf("%i\n",j);
-	 clearColor(1,0,0,0);
+	 clearColor(0,0,1,0);
 	//printstr("fuck you");
 	//printint(kkk);
 	return 0;

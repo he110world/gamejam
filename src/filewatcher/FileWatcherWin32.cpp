@@ -262,7 +262,17 @@ namespace FW
 			break;
 		};
 
-		watch->mFileWatchListener->handleFileAction(watch->mWatchid, watch->mDirName, filename, fwAction);
+		// HACK: on windows, same file events may fire twice, so we have to compare file times to eliminate identical events.
+		static FILETIME s_lastTime = {0};
+		WIN32_FILE_ATTRIBUTE_DATA fileAttr;
+		if( GetFileAttributesEx((String(watch->mDirName)+filename).c_str(), GetFileExInfoStandard, &fileAttr) )
+		{
+			if( fileAttr.ftLastWriteTime.dwHighDateTime != s_lastTime.dwHighDateTime || fileAttr.ftLastWriteTime.dwLowDateTime != s_lastTime.dwLowDateTime )
+			{
+				s_lastTime = fileAttr.ftLastWriteTime;
+				watch->mFileWatchListener->handleFileAction(watch->mWatchid, watch->mDirName, filename, fwAction);
+			}
+		}
 	}
 
 };//namespace FW
