@@ -14,7 +14,7 @@ typedef struct Global_s
 } Global_t;
 
 /* Here goes our drawing code */
-int drawGLScene( GLvoid )
+int update( GLvoid )
 {
 	glViewport(0,0,xres,yres);
     /* Clear The Screen And The Depth Buffer */
@@ -81,12 +81,12 @@ extern int scratchpad[10000];
 //extern void printstr(const char* str);
 int kkk=111;
 
-int drawGLScene( GLvoid )
+int update()
 {
 	int i = 0;
 	int j = mousex;
 	 //scratchpad[0]=123;
-	 printint(scratchpad[0]);
+	 printint(j);
 	//printstr("fuck you");
 	//printint(kkk);
 	return 0;

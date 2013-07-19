@@ -15,7 +15,7 @@
 //#include <GL/gl.h>
 //#include <GL/glu.h>
 #include "SDL.h"
-#include "SDL_opengl.h"
+//#include "SDL_opengl.h"
 #include "SDL_keyboard.h"
 #include <libtcc.h>
 #include <sys/types.h>
@@ -29,6 +29,7 @@
 #include <pthread.h>
 #include <curl/curl.h>
 #include <math.h>
+#include <GLES2/gl2.h>
 
 /* screen width, height, and bit depth */
 #define SCREEN_WIDTH  640
@@ -64,7 +65,7 @@ public:
 			//			printf("add %s\n", filename.c_str());
 			//			break;
 		case FW::Actions::Modified:
-			if( filename == "draw.c" )
+			if( filename == "update.c" )
 			{
 				recompile();		
 			}
@@ -89,6 +90,7 @@ void Quit( int returnCode )
 	exit( returnCode );
 }
 
+#if 0
 static void gluPerspective( GLdouble fovY, GLdouble aspect, GLdouble zNear, GLdouble zFar )
 {
     const GLdouble pi = 3.1415926535897932384626433832795;
@@ -100,7 +102,9 @@ static void gluPerspective( GLdouble fovY, GLdouble aspect, GLdouble zNear, GLdo
 
     glFrustum( -fW, fW, -fH, fH, zNear, zFar );
 }
+#endif
 
+#if 0
 /* function to reset our viewport after a window resize */
 int resizeWindow( int width, int height )
 {
@@ -134,6 +138,7 @@ int resizeWindow( int width, int height )
 
 	return( TRUE );
 }
+#endif
 
 /* function to handle key press events */
 void handleKeyPress( SDL_Keysym *keysym )
@@ -170,13 +175,13 @@ int initGL()
 {
 
 	/* Enable smooth shading */
-	glShadeModel( GL_SMOOTH );
+//	glShadeModel( GL_SMOOTH );
 
 	/* Set the background black */
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 
 	/* Depth buffer setup */
-	glClearDepth( 1.0f );
+	glClearDepthf( 1.0f );
 
 	/* Enables Depth Testing */
 	glEnable( GL_DEPTH_TEST );
@@ -185,7 +190,7 @@ int initGL()
 	glDepthFunc( GL_LEQUAL );
 
 	/* Really Nice Perspective Calculations */
-	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
+//	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 
 	return( TRUE );
 }
@@ -345,7 +350,7 @@ void glTexture( const char* texname )
 
 typedef void (*drawfp_t)();
 //void (*drawGLScene)() = 0;
-drawfp_t drawGLScene = 0;
+drawfp_t update = 0;
 TCCState* g_tcc = 0;
 
 void err(void *d, const char *s)
@@ -359,7 +364,7 @@ int recompile()
 {
 	/*
 	struct stat file_stat;
-	int err = stat("draw.c", &file_stat);
+	int err = stat("update.c", &file_stat);
 
 	if( !g_tcc )
 	{
@@ -373,7 +378,7 @@ int recompile()
 	}
 	*/
 	printf("recompile\n");
-	FILE* f = fopen( "draw.c", "r" );
+	FILE* f = fopen( "update.c", "r" );
 	fseek(f, 0L, SEEK_END);
 	long sz = ftell(f);
 	fseek(f, 0L, SEEK_SET);
@@ -414,8 +419,8 @@ int recompile()
 		return 1;
 
 	/* get entry symbol */
-	drawGLScene = (drawfp_t)tcc_get_symbol(s, "drawGLScene");
-	if (!drawGLScene)
+	update = (drawfp_t)tcc_get_symbol(s, "update");
+	if (!update)
 		return 1;
 
 	if( g_tcc ) tcc_delete(g_tcc);
@@ -514,7 +519,7 @@ int main(int argc, char **argv)
 
 	recompile();
 	/* resize the initial window */
-	resizeWindow( xres, yres );
+//	resizeWindow( xres, yres );
 
 	/* These are to calculate our fps */
 	static GLint T0     = 0;
@@ -590,9 +595,9 @@ int main(int argc, char **argv)
 		{
 			watcher->update();
 
-			if(drawGLScene)
+			if(update)
 			{
-				drawGLScene( );
+				update();
 			}
 			/* Draw it to the screen */
 			//SDL_GL_SwapBuffers( );

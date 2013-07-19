@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="tcc.lib libcurl.lib sdl2.lib SDL2main.lib opengl32.lib pthreadVC2.lib"
+				AdditionalDependencies="tcc.lib libcurl.lib sdl2.lib SDL2main.lib pthreadVC2.lib libEGL.lib libGLESv2.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib"
 				GenerateDebugInformation="true"
@@ -162,40 +162,60 @@
 	<References>
 	</References>
 	<Files>
-		<File
-			RelativePath="..\..\src\filewatcher\FileWatcher.cpp"
+		<Filter
+			Name="filewatcher"
 			>
-		</File>
-		<File
-			RelativePath="..\..\src\filewatcher\FileWatcher.h"
+			<File
+				RelativePath="..\..\src\filewatcher\FileWatcher.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\filewatcher\FileWatcher.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\filewatcher\FileWatcherImpl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\filewatcher\FileWatcherWin32.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\filewatcher\FileWatcherWin32.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="stb"
 			>
-		</File>
-		<File
-			RelativePath="..\..\src\filewatcher\FileWatcherImpl.h"
-			>
-		</File>
-		<File
-			RelativePath="..\..\src\filewatcher\FileWatcherWin32.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\src\filewatcher\FileWatcherWin32.h"
-			>
-		</File>
+			<File
+				RelativePath="..\..\src\core\stb_image.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\stb_image.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\stb_truetype.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\..\src\core\gamejam.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\core\stb_image.cpp"
+			RelativePath="..\..\src\core\graphics.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\core\stb_image.h"
+			RelativePath="..\..\src\core\graphics.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\src\core\stb_truetype.h"
+			RelativePath="..\..\src\core\platform.h"
 			>
 		</File>
 	</Files>
