@@ -339,9 +339,9 @@ void glTexture( const char* texname )
 	glEnable( GL_TEXTURE_2D );
 }
 
-typedef void (*drawfp_t)();
+typedef void (*updatefp_t)();
 //void (*drawGLScene)() = 0;
-drawfp_t update = 0;
+updatefp_t update = 0;
 TCCState* g_tcc = 0;
 
 void err(void *d, const char *s)
@@ -353,6 +353,22 @@ void clearColor( float r, float g, float b, float a )
 {
 	glClearColor(r,g,b,a);
 	glClear ( GL_COLOR_BUFFER_BIT );
+}
+
+void addSymbols(TCCState* s)
+{
+	tcc_add_symbol(s, "keystat", &keystat);
+	tcc_add_symbol(s, "mousestat", &mousestat);
+	tcc_add_symbol(s, "mousex", &mousex);
+	tcc_add_symbol(s, "mousey", &mousey);
+	tcc_add_symbol(s, "mousexr", &mousexr);
+	tcc_add_symbol(s, "mouseyr", &mouseyr);
+	tcc_add_symbol(s, "xres", &xres);
+	tcc_add_symbol(s, "yres", &yres);
+	tcc_add_symbol(s, "scratchpad", &scratchpad);
+
+	tcc_add_symbol(s, "glTexture", (void*)glTexture);
+	tcc_add_symbol(s, "clearColor", (void*)clearColor);
 }
 
 /*time_t lastmodtime;*/
@@ -389,23 +405,15 @@ int recompile()
 	int n;
 	tcc_set_error_func(s, &n, err);
 
-	tcc_add_symbol(s, "keystat", &keystat);
-	tcc_add_symbol(s, "mousestat", &mousestat);
-	tcc_add_symbol(s, "mousex", &mousex);
-	tcc_add_symbol(s, "mousey", &mousey);
-	tcc_add_symbol(s, "mousexr", &mousexr);
-	tcc_add_symbol(s, "mouseyr", &mouseyr);
-	tcc_add_symbol(s, "xres", &xres);
-	tcc_add_symbol(s, "yres", &yres);
-	tcc_add_symbol(s, "scratchpad", &scratchpad);
+	addSymbols(s);
 
-	tcc_add_symbol(s, "glTexture", (void*)glTexture);
-	tcc_add_symbol(s, "clearColor", (void*)clearColor);
-
-	if (tcc_compile_string(s, program) == -1)
-		return 1;
-	
+	int compileResult = tcc_compile_string(s, program);
 	free( program );
+
+	if ( compileResult == -1)
+	{
+		return 1;
+	}
 	
 	tcc_add_library_path(s,".");
 	
@@ -414,7 +422,7 @@ int recompile()
 		return 1;
 
 	/* get entry symbol */
-	update = (drawfp_t)tcc_get_symbol(s, "update");
+	update = (updatefp_t)tcc_get_symbol(s, "update");
 	if (!update)
 		return 1;
 
