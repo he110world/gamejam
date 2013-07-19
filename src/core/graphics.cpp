@@ -8,82 +8,83 @@
 #ifdef GJ_OS_WINDOWS
 typedef struct 
 { 
-   /// Window width 
-   GLint       width; 
-   /// Window height 
-   GLint       height; 
-   /// Window handle 
-   EGLNativeWindowType  hWnd; 
-   /// EGL display 
-   EGLDisplay  eglDisplay; 
-   /// EGL context 
-   EGLContext  eglContext; 
-   /// EGL surface 
-   EGLSurface  eglSurface; 
+	/// Window width 
+	GLint       width; 
+	/// Window height 
+	GLint       height; 
+	/// Window handle 
+	EGLNativeWindowType  hWnd; 
+	/// EGL display 
+	EGLDisplay  eglDisplay; 
+	/// EGL context 
+	EGLContext  eglContext; 
+	/// EGL surface 
+	EGLSurface  eglSurface; 
 } ESContext; 
 
 static EGLBoolean CreateEGLContext ( EGLNativeWindowType hWnd, EGLDisplay* eglDisplay, 
-                              EGLContext* eglContext, EGLSurface* eglSurface, 
-                              EGLint* configAttribList, EGLint* surfaceAttribList) 
+									EGLContext* eglContext, EGLSurface* eglSurface, 
+									EGLint* configAttribList, EGLint* surfaceAttribList) 
 { 
-   EGLint numConfigs; 
-   EGLint majorVersion; 
-   EGLint minorVersion; 
-   EGLDisplay display; 
-   EGLContext context; 
-   EGLSurface surface; 
-   EGLConfig config; 
-   EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE }; 
-    
-   // Get Display 
-   display = eglGetDisplay(GetDC(hWnd)); // EGL_DEFAULT_DISPLAY 
-   if ( display == EGL_NO_DISPLAY ) 
-   { 
-      return EGL_FALSE; 
-   } 
+	EGLint numConfigs; 
+	EGLint majorVersion; 
+	EGLint minorVersion; 
+	EGLDisplay display; 
+	EGLContext context; 
+	EGLSurface surface; 
+	EGLConfig config; 
+	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE }; 
 
-   // Initialize EGL 
-   if ( !eglInitialize(display, &majorVersion, &minorVersion) ) 
-   { 
-      return EGL_FALSE; 
-   } 
+	// Get Display 
+	display = eglGetDisplay(GetDC(hWnd)); // EGL_DEFAULT_DISPLAY 
+	if ( display == EGL_NO_DISPLAY ) 
+	{ 
+		return EGL_FALSE; 
+	} 
 
-   // Get configs 
-   if ( !eglGetConfigs(display, NULL, 0, &numConfigs) ) 
-   { 
-      return EGL_FALSE; 
-   } 
+	// Initialize EGL 
+	LoadLibrary("d3dcompiler_43.dll");	// HACK: MUST call this, otherwise ANGEL can't find d3d dlls
+	if ( !eglInitialize(display, &majorVersion, &minorVersion) ) 
+	{ 
+		return EGL_FALSE; 
+	} 
 
-   // Choose config 
-   if ( !eglChooseConfig(display, configAttribList, &config, 1, &numConfigs) ) 
-   { 
-      return EGL_FALSE; 
-   } 
+	// Get configs 
+	if ( !eglGetConfigs(display, NULL, 0, &numConfigs) ) 
+	{ 
+		return EGL_FALSE; 
+	} 
 
-   // Create a surface 
-   surface = eglCreateWindowSurface(display, config, (EGLNativeWindowType)hWnd, surfaceAttribList); 
-   if ( surface == EGL_NO_SURFACE ) 
-   { 
-      return EGL_FALSE; 
-   } 
+	// Choose config 
+	if ( !eglChooseConfig(display, configAttribList, &config, 1, &numConfigs) ) 
+	{ 
+		return EGL_FALSE; 
+	} 
 
-   // Create a GL context 
-   context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs ); 
-   if ( context == EGL_NO_CONTEXT ) 
-   { 
-      return EGL_FALSE; 
-   }    
-    
-   // Make the context current 
-   if ( !eglMakeCurrent(display, surface, surface, context) ) 
-   { 
-      return EGL_FALSE; 
-   } 
-    
-   *eglDisplay = display; 
-   *eglSurface = surface; 
-   *eglContext = context; 
-   return EGL_TRUE; 
+	// Create a surface 
+	surface = eglCreateWindowSurface(display, config, (EGLNativeWindowType)hWnd, surfaceAttribList); 
+	if ( surface == EGL_NO_SURFACE ) 
+	{ 
+		return EGL_FALSE; 
+	} 
+
+	// Create a GL context 
+	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs ); 
+	if ( context == EGL_NO_CONTEXT ) 
+	{ 
+		return EGL_FALSE; 
+	}    
+
+	// Make the context current 
+	if ( !eglMakeCurrent(display, surface, surface, context) ) 
+	{ 
+		return EGL_FALSE; 
+	} 
+
+	*eglDisplay = display; 
+	*eglSurface = surface; 
+	*eglContext = context; 
+	return EGL_TRUE; 
 } 
 #endif
 
@@ -99,7 +100,10 @@ int initGraphics( int w, int h, int fullscreen )
 {
 	int result = SDL_Init( SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO );
 
-    g_window = SDL_CreateWindow(NULL, 0, 0, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+
+	g_window = SDL_CreateWindow(NULL, 100, 100, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN/* | SDL_WINDOW_BORDERLESS*/ | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 
 #ifdef GJ_OS_WINDOWS
 	SDL_SysWMinfo info; 
@@ -154,4 +158,13 @@ int initGraphics( int w, int h, int fullscreen )
 #endif 
 
 	return 0;
+}
+
+void swapBuffers()
+{
+#ifdef GJ_OS_WINDOWS
+	eglSwapBuffers( g_context->eglDisplay, g_context->eglSurface ); 
+#else
+	SDL_GL_SwapWindow(g_window);
+#endif
 }

@@ -30,6 +30,7 @@
 #include <curl/curl.h>
 #include <math.h>
 #include <GLES2/gl2.h>
+#include "graphics.h"
 
 /* screen width, height, and bit depth */
 #define SCREEN_WIDTH  640
@@ -178,7 +179,7 @@ int initGL()
 //	glShadeModel( GL_SMOOTH );
 
 	/* Set the background black */
-	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
+	glClearColor( 1.0f, 0.0f, 0.0f, 0.0f );
 
 	/* Depth buffer setup */
 	glClearDepthf( 1.0f );
@@ -283,16 +284,6 @@ static void *loadTexture_cb(void *url)
 	return NULL;
 }
 
-void printstr( const char* str )
-{
-	printf("%s\n", str);
-}
-
-void printint( int i )
-{
-	printf("%i\n", i);
-}
-
 void glTexture( const char* texname )
 {
 	// disable texture
@@ -358,6 +349,11 @@ void err(void *d, const char *s)
 	printf("error n%ld (%s)", d, s);
 }
 
+void clearColor( float r, float g, float b, float a )
+{
+	glClearColor(r,g,b,a);
+	glClear ( GL_COLOR_BUFFER_BIT );
+}
 
 /*time_t lastmodtime;*/
 int recompile()
@@ -403,9 +399,8 @@ int recompile()
 	tcc_add_symbol(s, "yres", &yres);
 	tcc_add_symbol(s, "scratchpad", &scratchpad);
 
-	tcc_add_symbol(s, "glTexture", (void*)glTexture);	
-	tcc_add_symbol(s, "printstr", (void*)printstr);	
-	tcc_add_symbol(s, "printint", (void*)printint);	
+	tcc_add_symbol(s, "glTexture", (void*)glTexture);
+	tcc_add_symbol(s, "clearColor", (void*)clearColor);
 
 	if (tcc_compile_string(s, program) == -1)
 		return 1;
@@ -493,6 +488,7 @@ int main(int argc, char **argv)
 	}
 #else
 
+#if 0
     SDL_Init(SDL_INIT_VIDEO);
     SDL_RendererInfo displayRendererInfo;
     SDL_CreateWindowAndRenderer(800, 600, SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
@@ -502,14 +498,16 @@ int main(int argc, char **argv)
         (displayRendererInfo.flags & SDL_RENDERER_TARGETTEXTURE) == 0) {
         /*TODO: Handle this. We have no render surface and not accelerated. */
     }
+#endif
     
 #endif
 
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+//	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+//	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 
 	/* initialize OpenGL */
+	initGraphics(800,600,0);
 	initGL( );
 	initInput();
 	curl_global_init(CURL_GLOBAL_ALL); 
@@ -600,8 +598,7 @@ int main(int argc, char **argv)
 				update();
 			}
 			/* Draw it to the screen */
-			//SDL_GL_SwapBuffers( );
-			SDL_RenderPresent(displayRenderer);
+			swapBuffers();
 			
 			/* Gather our frames per second */
 			Frames++;
