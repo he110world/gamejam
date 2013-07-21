@@ -205,6 +205,26 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="imgui"
+			>
+			<File
+				RelativePath="..\..\src\core\imgui.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\imgui.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\imguiRenderGLES2.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\imguiRenderGLES2.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\..\src\core\gamejam.cpp"
 			>
