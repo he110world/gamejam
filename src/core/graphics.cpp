@@ -2,8 +2,10 @@
 #include "platform.h"
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h> 
+#include <stdio.h>
 
 #ifdef GJ_OS_WINDOWS
 typedef struct 
@@ -96,6 +98,18 @@ ESContext* g_context = NULL;
 SDL_GLContext g_context = NULL;
 #endif
 
+PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = NULL;
+PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = NULL;
+PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = NULL;
+
+static void initGLESExtensions()
+{
+	// TODO: ANGEL doesn't support these extensions
+	glBindVertexArrayOES = (PFNGLBINDVERTEXARRAYOESPROC)eglGetProcAddress("glBindVertexArrayOES");
+	glGenVertexArraysOES = (PFNGLGENVERTEXARRAYSOESPROC)eglGetProcAddress("glGenVertexArrayOES");
+	glDeleteVertexArraysOES = (PFNGLDELETEVERTEXARRAYSOESPROC)eglGetProcAddress("glDeleteVertexArrayOES");
+}
+
 int initGraphics( int w, int h, int fullscreen )
 {
 	int result = SDL_Init( SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO );
@@ -157,6 +171,8 @@ int initGraphics( int w, int h, int fullscreen )
 	//SDL_assert(0 == result); 
 #endif 
 
+	initGLESExtensions();
+
 	return 0;
 }
 
@@ -167,4 +183,17 @@ void swapBuffers()
 #else
 	SDL_GL_SwapWindow(g_window);
 #endif
+}
+
+void printShaderError( const char* name, GLuint s )
+{
+	int status;
+	glGetShaderiv(s, GL_COMPILE_STATUS, &status);
+    if(status != GL_TRUE){
+        char errorlog[1024] = {'\0'};
+        glGetShaderInfoLog(s, 1024, 0, errorlog);
+		printf("%s error:\n%s", name, errorlog);
+		printf("--------------------------------------------------\n");
+    }
+
 }

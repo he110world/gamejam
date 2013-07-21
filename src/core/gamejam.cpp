@@ -31,6 +31,8 @@
 #include <math.h>
 #include <GLES2/gl2.h>
 #include "graphics.h"
+#include "imgui.h"
+#include "imguiRenderGLES2.h"
 
 /* screen width, height, and bit depth */
 #define SCREEN_WIDTH  640
@@ -369,6 +371,12 @@ void addSymbols(TCCState* s)
 
 	tcc_add_symbol(s, "glTexture", (void*)glTexture);
 	tcc_add_symbol(s, "clearColor", (void*)clearColor);
+	tcc_add_symbol(s, "imguiBeginFrame", (void*)imguiBeginFrame);
+	tcc_add_symbol(s, "imguiEndFrame", (void*)imguiEndFrame);
+	tcc_add_symbol(s, "imguiButton", (void*)imguiButton);
+	tcc_add_symbol(s, "imguiSlider", (void*)imguiSlider);
+	tcc_add_symbol(s, "imguiBeginScrollArea", (void*)imguiBeginScrollArea);
+	tcc_add_symbol(s, "imguiEndScrollArea", (void*)imguiEndScrollArea);
 }
 
 /*time_t lastmodtime;*/
@@ -518,6 +526,7 @@ int main(int argc, char **argv)
 	initGraphics(800,600,0);
 	initGL( );
 	initInput();
+	imguiRenderGLInit("DroidSans.ttf");
 	curl_global_init(CURL_GLOBAL_ALL); 
 
 	FW::FileWatcher* watcher = new FW::FileWatcher();
@@ -605,6 +614,8 @@ int main(int argc, char **argv)
 			{
 				update();
 			}
+
+			imguiRenderGLDraw(800, 600); 
 			/* Draw it to the screen */
 			swapBuffers();
 			
@@ -615,7 +626,7 @@ int main(int argc, char **argv)
 				if (t - T0 >= 5000) {
 					GLfloat seconds = (t - T0) / 1000.f;
 					GLfloat fps = Frames / seconds;
-					printf("%d frames in %g seconds = %g FPS\n", Frames, seconds, fps);
+					//printf("%d frames in %g seconds = %g FPS\n", Frames, seconds, fps);
 					T0 = t;
 					Frames = 0;
 				}
@@ -623,6 +634,8 @@ int main(int argc, char **argv)
 
 		}
 	}
+
+	imguiRenderGLDestroy();
 
 	/* clean ourselves up and exit */
 	Quit( 0 );
