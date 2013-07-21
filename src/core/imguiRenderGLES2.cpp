@@ -642,6 +642,8 @@ void imguiRenderGLDraw(int width, int height)
 	glUniform2f(g_programViewportLocation, (float) width, (float) height);
 	glUniform1i(g_programTextureLocation, 0);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 	glDisable(GL_SCISSOR_TEST);
 	for (int i = 0; i < nq; ++i)
@@ -707,4 +709,6 @@ void imguiRenderGLDraw(int width, int height)
 		}
 	}
 	glDisable(GL_SCISSOR_TEST);
+
+	glDisable(GL_BLEND);
 }
