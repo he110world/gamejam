@@ -71,7 +71,7 @@ int update( GLvoid )
 }
 #else
 
-#include "imgui.h"
+#include "gamejam.h"
 //#include <stdio.h>
 extern int keystat[1000];
 extern int mousestat[10];
@@ -93,19 +93,20 @@ int update()
 		
 	//scratchpad[0]=123;
 	//printf("%i\n",j);
-	clearColor(1,0,1,0);
-	imguiBeginFrame(mousex, 600-mousey, mousestat[1], 0);
+	clearColor(0,0,1,0);
+	guiBeginFrame(mousex, 600-mousey, mousestat[1], 0);
 	//printf("%i\n",mousestat[0]);
-	imguiBeginScrollArea("Scroll area", /*mousex-*/200, 10, 800 / 4, 600 - 40, &scrollarea1);
-	imguiButton("Button",1);
-	imguiSlider("Slider", &value1, 0.f, 100.f, 1.f, 1);
-	imguiEndScrollArea();
+	guiBeginScrollArea("Scroll area", /*mousex-*/200, 10, 800 / 4, 600 - 40, &scrollarea1);
+	guiButton("Button",1);
+	guiSlider("Slider", &value1, 0.f, 100.f, 1.f, 1);
+	//printf("%f\n",value1);
+	guiEndScrollArea();
 	
-	imguiBeginScrollArea("Scroll area", mousex, 600-mousey, 800 / 4, 200 - 40, &scrollarea2);
-	imguiButton("Button",1);
-	imguiEndScrollArea();
-	
-	imguiEndFrame();
+	guiBeginScrollArea("Scroll area", mousex, 600-mousey, 800 / 4, 200 - 40, &scrollarea2);
+	guiButton("Button",1);
+	guiButton("fuck",1);
+	guiEndScrollArea();
+	guiEndFrame();
 	return 0;
 }
 #endif

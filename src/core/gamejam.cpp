@@ -33,6 +33,7 @@
 #include "graphics.h"
 #include "imgui.h"
 #include "imguiRenderGLES2.h"
+#include "render.h"
 
 /* screen width, height, and bit depth */
 #define SCREEN_WIDTH  640
@@ -346,7 +347,7 @@ typedef void (*updatefp_t)();
 updatefp_t update = 0;
 TCCState* g_tcc = 0;
 
-void err(void *d, const char *s)
+static void compile_err(void *d, const char *s)
 {
 	printf("error n%ld (%s)", d, s);
 }
@@ -371,12 +372,30 @@ void addSymbols(TCCState* s)
 
 	tcc_add_symbol(s, "glTexture", (void*)glTexture);
 	tcc_add_symbol(s, "clearColor", (void*)clearColor);
-	tcc_add_symbol(s, "imguiBeginFrame", (void*)imguiBeginFrame);
-	tcc_add_symbol(s, "imguiEndFrame", (void*)imguiEndFrame);
-	tcc_add_symbol(s, "imguiButton", (void*)imguiButton);
-	tcc_add_symbol(s, "imguiSlider", (void*)imguiSlider);
-	tcc_add_symbol(s, "imguiBeginScrollArea", (void*)imguiBeginScrollArea);
-	tcc_add_symbol(s, "imguiEndScrollArea", (void*)imguiEndScrollArea);
+
+	// IMGUI
+	tcc_add_symbol(s, "guiBeginFrame", (void*)imguiBeginFrame);
+	tcc_add_symbol(s, "guiEndFrame", (void*)imguiEndFrame);
+	tcc_add_symbol(s, "guiBeginScrollArea", (void*)imguiBeginScrollArea);
+	tcc_add_symbol(s, "guiEndScrollArea", (void*)imguiEndScrollArea);
+
+	tcc_add_symbol(s, "guiIndent", (void*)imguiIndent);
+	tcc_add_symbol(s, "guiUnindent", (void*)imguiUnindent);
+	tcc_add_symbol(s, "guiSeparator", (void*)imguiSeparator);
+	tcc_add_symbol(s, "guiSeparatorLine", (void*)imguiSeparatorLine);
+
+	tcc_add_symbol(s, "guiButton", (void*)imguiButton);
+	tcc_add_symbol(s, "guiItem", (void*)imguiItem);
+	tcc_add_symbol(s, "guiCheck", (void*)imguiCheck);
+	tcc_add_symbol(s, "guiCollapse", (void*)imguiCollapse);
+	tcc_add_symbol(s, "guiLabel", (void*)imguiLabel);
+	tcc_add_symbol(s, "guiValue", (void*)imguiValue);
+	tcc_add_symbol(s, "guiSlider", (void*)imguiSlider);
+
+	tcc_add_symbol(s, "guiDrawText", (void*)imguiDrawText);
+	tcc_add_symbol(s, "guiDrawLine", (void*)imguiDrawLine);
+	tcc_add_symbol(s, "guiDrawRoundedRect", (void*)imguiDrawRoundedRect);
+	tcc_add_symbol(s, "guiDrawRect", (void*)imguiDrawRect);
 }
 
 /*time_t lastmodtime;*/
@@ -411,7 +430,7 @@ int recompile()
 	tcc_set_output_type(s, TCC_OUTPUT_MEMORY);
 
 	int n;
-	tcc_set_error_func(s, &n, err);
+	tcc_set_error_func(s, &n, compile_err);
 
 	addSymbols(s);
 
@@ -443,82 +462,6 @@ int recompile()
 
 int main(int argc, char **argv)
 {
-#if 0
-	/* Flags to pass to SDL_SetVideoMode */
-	int videoFlags;
-	/* main loop variable */
-	int done = FALSE;
-	/* used to collect events */
-	SDL_Event event;
-	/* this holds some info about our display */
-	const SDL_VideoInfo *videoInfo;
-	/* whether or not the window is active */
-	int isActive = TRUE;
-
-	/* initialize SDL */
-	if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-	{
-		fprintf( stderr, "Video initialization failed: %s\n",
-			SDL_GetError( ) );
-		Quit( 1 );
-	}
-
-	/* Fetch the video info */
-	videoInfo = SDL_GetVideoInfo( );
-
-	if ( !videoInfo )
-	{
-		fprintf( stderr, "Video query failed: %s\n",
-			SDL_GetError( ) );
-		Quit( 1 );
-	}
-
-	/* the flags to pass to SDL_SetVideoMode */
-	videoFlags  = SDL_OPENGL;          /* Enable OpenGL in SDL */
-	videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
-	videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
-	videoFlags |= SDL_RESIZABLE;       /* Enable window resizing */
-
-	/* This checks to see if surfaces can be stored in memory */
-	if ( videoInfo->hw_available )
-		videoFlags |= SDL_HWSURFACE;
-	else
-		videoFlags |= SDL_SWSURFACE;
-
-	/* This checks if hardware blits can be done */
-	if ( videoInfo->blit_hw )
-		videoFlags |= SDL_HWACCEL;
-
-	/* Sets up OpenGL double buffering */
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
-	/* get a SDL surface */
-	surface = SDL_SetVideoMode( xres, yres, SCREEN_BPP,
-		videoFlags );
-
-	/* Verify there is a surface */
-	if ( !surface )
-	{
-		fprintf( stderr,  "Video mode set failed: %s\n", SDL_GetError( ) );
-		Quit( 1 );
-	}
-#else
-
-#if 0
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_RendererInfo displayRendererInfo;
-    SDL_CreateWindowAndRenderer(800, 600, SDL_WINDOW_OPENGL, &displayWindow, &displayRenderer);
-    SDL_GetRendererInfo(displayRenderer, &displayRendererInfo);
-    /*TODO: Check that we have OpenGL */
-    if ((displayRendererInfo.flags & SDL_RENDERER_ACCELERATED) == 0 || 
-        (displayRendererInfo.flags & SDL_RENDERER_TARGETTEXTURE) == 0) {
-        /*TODO: Handle this. We have no render surface and not accelerated. */
-    }
-#endif
-    
-#endif
-
-
 //	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 //	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 
@@ -526,6 +469,7 @@ int main(int argc, char **argv)
 	initGraphics(800,600,0);
 	initGL( );
 	initInput();
+	renderInit();
 	imguiRenderGLInit("DroidSans.ttf");
 	curl_global_init(CURL_GLOBAL_ALL); 
 
@@ -638,6 +582,7 @@ int main(int argc, char **argv)
 	}
 
 	imguiRenderGLDestroy();
+	renderFini();
 
 	/* clean ourselves up and exit */
 	Quit( 0 );

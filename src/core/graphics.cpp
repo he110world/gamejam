@@ -112,7 +112,7 @@ static void initGLESExtensions()
 
 int initGraphics( int w, int h, int fullscreen )
 {
-	int result = SDL_Init( SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO );
+	int result = SDL_Init( /*SDL_INIT_TIMER |*/ SDL_INIT_AUDIO | SDL_INIT_VIDEO );
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);

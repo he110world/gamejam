@@ -225,6 +225,34 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="render"
+			>
+			<File
+				RelativePath="..\..\src\core\cursor3d.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\cursor3d.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\model.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\model.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\render.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\render.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\..\src\core\gamejam.cpp"
 			>
