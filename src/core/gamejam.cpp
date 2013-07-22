@@ -398,7 +398,7 @@ int recompile()
 	}
 	*/
 	printf("recompile\n");
-	FILE* f = fopen( "update.c", "r" );
+	FILE* f = fopen( "update.c", "rb" );	// MUST be "rb" on windows - othersize CRLF will be converted to \n, and file size will be wrong (CRLF:2bytes, \n:1bytes)
 	fseek(f, 0L, SEEK_END);
 	long sz = ftell(f);
 	fseek(f, 0L, SEEK_SET);
@@ -623,13 +623,15 @@ int main(int argc, char **argv)
 			Frames++;
 			{
 				GLint t = SDL_GetTicks();
-				if (t - T0 >= 5000) {
-					GLfloat seconds = (t - T0) / 1000.f;
-					GLfloat fps = Frames / seconds;
-					//printf("%d frames in %g seconds = %g FPS\n", Frames, seconds, fps);
-					T0 = t;
-					Frames = 0;
+				if (t - T0 < 16) {
+//					SDL_Delay(16 - (t-T0));
+
+//					GLfloat seconds = (t - T0) / 1000.f;
+//					GLfloat fps = Frames / seconds;
+//					Frames = 0;
 				}
+
+				T0 = t;
 			}
 
 		}
