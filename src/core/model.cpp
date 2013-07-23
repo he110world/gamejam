@@ -1,4 +1,6 @@
 #include "model.h"
+#include "texture.h"
+#include "shader.h"
 #include "cursor3d.h"
 #include <GLES2/gl2.h>
 #include <vector>
@@ -25,6 +27,14 @@ public:
 	Model( int numverts );
 	~Model();
 
+	void setTexture( const char* texname )
+	{
+		unsigned int texid = g_textureManager->incRef(texname);
+		g_textureManager->decRef(texname);
+		texID_ = texid;
+		texName_ = texname;
+	}
+
 	void setQuad( int v1, int v2, int v3, int v4 );
 	void setTri( int v1, int v2, int v3 );
 	void updateVertex( int vertid, float x, float y, float z );
@@ -34,7 +44,9 @@ public:
 	void update();
 
 private:
+	unsigned int				texID_;
 	int							numVerts_;
+	std::string					texName_;
 
 	// software buffers
 	std::vector<ModelVertex>	verts_;
@@ -55,6 +67,7 @@ Model::Model( int numverts )
 , texcoordDirty_(false)
 , normalDirty_(false)
 , indexDirty_(false)
+, texID_(UNDEFINED_TEXTURE)
 {
 	verts_.resize(numverts);
 	texcoords_.resize(numverts);
@@ -63,7 +76,7 @@ Model::Model( int numverts )
 
 Model::~Model()
 {
-
+	g_textureManager->decRef(texName_.c_str());
 }
 
 void Model::setQuad( int v1, int v2, int v3, int v4 )
@@ -129,6 +142,19 @@ void Model::update()
 {
 }
 
+void ModelManager::setTexture( int id, const char* texname )
+{
+	Model* model = get(id);
+	if( model )
+	{
+		model->setTexture( texname );
+	}
+}
+
+void ModelManager::setShader( int id, const char* vs, const char*ps )
+{
+
+}
 //////////////////////////////////////////////////////////////////////////
 ModelManager* g_modelManager = NULL;
 
@@ -142,20 +168,32 @@ ModelManager::~ModelManager()
 {
 
 }
-void ModelManager::loadObj( int id )
+
+Model* ModelManager::createDummy()
 {
-	if( get(id) )
-	{
-		return;
-	}
+	return NULL;
 }
 
-void ModelManager::loadMd5( int id )
+void ModelManager::loadObj( int id, const char* filename )
 {
 	if( get(id) )
 	{
 		return;
 	}
+
+	Model* model = createDummy();
+	models_[id] = model;
+}
+
+void ModelManager::loadMd5( int id, const char* filename )
+{
+	if( get(id) )
+	{
+		return;
+	}
+
+	Model* model = createDummy();
+	models_[id] = model;
 }
 
 void ModelManager::create( int id, int numverts )
@@ -248,4 +286,10 @@ void ModelManager::updateNormal( int vertid, float nx, float ny, float nz )
 	{
 		current_->updateNormal(vertid,nx,ny,nz);
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void loadModel_ThreadMain()
+{
+
 }

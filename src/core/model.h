@@ -10,11 +10,13 @@ public:
 	ModelManager();
 	~ModelManager();
 
-	void loadObj( int id );
-	void loadMd5( int id );
+	void loadObj( int id, const char* filename );
+	void loadMd5( int id, const char* filename );
 	void create( int id, int numverts );
 	void destroy( int id );
 	void draw( int id );
+	void setTexture( int id, const char* texname );
+	void setShader( int id, const char* vs, const char*ps );
 	void beginUpdate( int id );
 	void endUpdate();
 	void setQuad( int v1, int v2, int v3, int v4 );
@@ -22,6 +24,8 @@ public:
 	void updateVertex( int vertid, float x, float y, float z );
 	void updateTexCoord( int vertid, float u, float v );
 	void updateNormal( int vertid, float nx, float ny, float nz );
+
+private:
 	Model* get( int id )
 	{
 		std::map<int, Model*>::iterator it = models_.find(id);
@@ -32,7 +36,8 @@ public:
 		return NULL;
 	}
 
-private:
+	Model* createDummy();
+
 	std::map<int, Model*>	models_;
 	Model*					current_;
 };

@@ -2,8 +2,50 @@
 #include <map>
 #include <assert.h>
 #include "render.h"
+#include "texture.h"
+#include "shader.h"
 #include "model.h"
 
+void renderInit()
+{
+	if( !g_modelManager )
+	{
+		g_modelManager = new ModelManager;
+	}
+
+	if( !g_textureManager )
+	{
+		g_textureManager = new TextureManager;
+	}
+
+	if( !g_shaderManager )
+	{
+		g_shaderManager = new ShaderManager;
+	}
+}
+
+void renderFini()
+{
+	if( g_modelManager )
+	{
+		delete g_modelManager;
+		g_modelManager = NULL;
+	}
+
+	if( g_textureManager )
+	{
+		delete g_textureManager;
+		g_textureManager = NULL;
+	}
+
+	if( g_shaderManager )
+	{
+		delete g_shaderManager;
+		g_shaderManager = NULL;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
 void modelLoad( int modelid, const char* modelname )
 {
 
@@ -24,12 +66,23 @@ void modelDraw( int modelid )
 	g_modelManager->draw(modelid);
 }
 
-void modelBeginUpdate( int modelid )
+void modelTexture( int modelid, const char* texname )
+{
+	g_modelManager->setTexture(modelid, texname);
+}
+
+void modelShader( int modelid, const char* vs, const char* ps )
+{
+	g_modelManager->setShader(modelid, vs, ps);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void modelBeginUpdateMesh( int modelid )
 {
 	g_modelManager->beginUpdate(modelid);
 }
 
-void modelEndUpdate()
+void modelEndUpdateMesh()
 {
 	g_modelManager->endUpdate();
 }
@@ -57,20 +110,4 @@ void modelTexCoord( int vertid, float u, float v )
 void modelNormal( int vertid, float nx, float ny, float nz )
 {
 	g_modelManager->updateNormal(vertid,nx,ny,nz);
-}
-
-void renderInit()
-{
-	if( !g_modelManager )
-	{
-		g_modelManager = new ModelManager;
-	}
-}
-
-void renderFini()
-{
-	if( g_modelManager )
-	{
-		delete g_modelManager;
-	}
 }

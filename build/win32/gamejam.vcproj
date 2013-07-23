@@ -229,6 +229,14 @@
 			Name="render"
 			>
 			<File
+				RelativePath="..\..\src\core\background_loader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\background_loader.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\core\cursor3d.cpp"
 				>
 			</File>
@@ -250,6 +258,30 @@
 			</File>
 			<File
 				RelativePath="..\..\src\core\render.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\resource_cache.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\resource_cache.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\shader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\shader.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\texture.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\core\texture.h"
 				>
 			</File>
 		</Filter>
