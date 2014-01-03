@@ -1,11 +1,14 @@
 #include "graphics.h"
 #include "platform.h"
+
+#if defined(GJ_OS_WINDOWS)
 #include <EGL/egl.h>
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_syswm.h> 
+#endif
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
 #include <stdio.h>
+
 
 #ifdef GJ_OS_WINDOWS
 typedef struct 
@@ -93,29 +96,33 @@ static EGLBoolean CreateEGLContext ( EGLNativeWindowType hWnd, EGLDisplay* eglDi
 SDL_Window *g_window = NULL;
 
 #ifdef GJ_OS_WINDOWS
-ESContext* g_context = NULL; 
+ESContext* g_context = NULL;
+PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = NULL;
+PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = NULL;
+PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = NULL;
 #else
 SDL_GLContext g_context = NULL;
 #endif
 
-PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOES = NULL;
-PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOES = NULL;
-PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOES = NULL;
 
 static void initGLESExtensions()
 {
+#if 0
 	// TODO: ANGEL doesn't support these extensions
 	glBindVertexArrayOES = (PFNGLBINDVERTEXARRAYOESPROC)eglGetProcAddress("glBindVertexArrayOES");
 	glGenVertexArraysOES = (PFNGLGENVERTEXARRAYSOESPROC)eglGetProcAddress("glGenVertexArrayOES");
 	glDeleteVertexArraysOES = (PFNGLDELETEVERTEXARRAYSOESPROC)eglGetProcAddress("glDeleteVertexArrayOES");
+#endif
 }
 
 int initGraphics( int w, int h, int fullscreen )
 {
 	int result = SDL_Init( /*SDL_INIT_TIMER |*/ SDL_INIT_AUDIO | SDL_INIT_VIDEO );
 
+#ifdef GJ_OS_WINDOWS
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+#endif
 
 	g_window = SDL_CreateWindow(NULL, 100, 100, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN/* | SDL_WINDOW_BORDERLESS*/ | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 
@@ -173,7 +180,7 @@ int initGraphics( int w, int h, int fullscreen )
 
 	initGLESExtensions();
 
-	return 0;
+	return result;
 }
 
 void swapBuffers()
@@ -185,7 +192,7 @@ void swapBuffers()
 #endif
 }
 
-void printShaderError( const char* name, GLuint s )
+void printShaderError( const char* name, unsigned int s )
 {
 	int status;
 	glGetShaderiv(s, GL_COMPILE_STATUS, &status);

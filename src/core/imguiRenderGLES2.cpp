@@ -18,12 +18,11 @@
 
 // Source altered and distributed from https://github.com/AdrienHerubel/imgui
 
+#include "platform.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
-
-#include <GLES2/gl2.h>
 #include "graphics.h"
 #include "imgui.h"
 
@@ -424,7 +423,7 @@ bool imguiRenderGLInit(const char* fontpath)
 	glAttachShader(g_program, vso);
 
 	const char * fs =
-		"precision highp float;\n"
+		//"precision highp float;\n"
 		"varying vec2 texCoord;\n"
 		"varying vec4 vertexColor;\n"
 		"uniform sampler2D Texture;\n"

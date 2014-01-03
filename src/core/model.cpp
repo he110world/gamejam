@@ -2,7 +2,6 @@
 #include "texture.h"
 #include "shader.h"
 #include "cursor3d.h"
-#include <GLES2/gl2.h>
 #include <vector>
 
 //////////////////////////////////////////////////////////////////////////

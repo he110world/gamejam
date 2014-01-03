@@ -1,4 +1,3 @@
-#include <GLES2/gl2.h>
 #include <map>
 #include <assert.h>
 #include "render.h"

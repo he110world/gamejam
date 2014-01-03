@@ -12,12 +12,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-#include "SDL.h"
-//#include "SDL_opengl.h"
-#include "SDL_keyboard.h"
-#include <libtcc.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_keyboard.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 //#include <unistd.h>
@@ -25,12 +21,12 @@
 #include <map>
 #include <string>
 #include <math.h>
-#include <GLES2/gl2.h>
 #include <curl/curl.h>
 #include "graphics.h"
 #include "imgui.h"
 #include "imguiRenderGLES2.h"
 #include "render.h"
+#include <libtcc.h>
 
 /* screen width, height, and bit depth */
 #define SCREEN_WIDTH  640
@@ -74,6 +70,8 @@ public:
 			//		case FW::Actions::Delete:
 			//			printf("del %s\n", filename.c_str());
 			//			break;
+        default:
+                break;
 		}
 	}
 };
@@ -203,7 +201,7 @@ TCCState* g_tcc = 0;
 
 static void compile_err(void *d, const char *s)
 {
-	printf("error n%ld (%s)", d, s);
+	printf("error n%ld (%s)", (long)d, s);
 }
 
 void clearColor( float r, float g, float b, float a )
@@ -327,7 +325,7 @@ int main(int argc, char **argv)
 	curl_global_init(CURL_GLOBAL_ALL); 
 
 	FW::FileWatcher* watcher = new FW::FileWatcher();
-	FW::WatchID watchid = watcher->addWatch( "./", new RecompileListener() );
+	/*FW::WatchID watchid = */watcher->addWatch( "./", new RecompileListener() );
 
 	recompile();
 	/* resize the initial window */
