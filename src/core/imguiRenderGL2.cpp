@@ -16,15 +16,20 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-// Source altered and distributed from https://github.com/AdrienHerubel/imgui
-
-#include "platform.h"
+// Source altered and distributed from https://github.com/AdrienHerubel/imguir
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
-#include "graphics.h"
+
 #include "imgui.h"
+
+#include "glew/glew.h"
+#ifdef __APPLE__
+#include <OpenGL/gl2.h>
+#else
+#include <GL/gl.h>
+#endif
 
 // Some math headers don't have PI defined.
 static const float PI = 3.14159265f;
@@ -50,21 +55,12 @@ void* imguimalloc(size_t size, void* /*userptr*/)
 static const unsigned TEMP_COORD_COUNT = 100;
 static float g_tempCoords[TEMP_COORD_COUNT*2];
 static float g_tempNormals[TEMP_COORD_COUNT*2];
-static float g_tempVertices[TEMP_COORD_COUNT * 12 + (TEMP_COORD_COUNT - 2) * 6];
-static float g_tempTextureCoords[TEMP_COORD_COUNT * 12 + (TEMP_COORD_COUNT - 2) * 6];
-static float g_tempColors[TEMP_COORD_COUNT * 24 + (TEMP_COORD_COUNT - 2) * 12];
 
 static const int CIRCLE_VERTS = 8*4;
 static float g_circleVerts[CIRCLE_VERTS*2];
 
 static stbtt_bakedchar g_cdata[96]; // ASCII 32..126 is 95 glyphs
 static GLuint g_ftex = 0;
-static GLuint g_whitetex = 0;
-static GLuint g_vao = 0;
-static GLuint g_vbos[3] = {0, 0, 0};
-static GLuint g_program = 0;
-static GLuint g_programViewportLocation = 0;
-static GLuint g_programTextureLocation = 0;
 
 inline unsigned int RGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
@@ -92,9 +88,6 @@ static void drawPolygon(const float* coords, unsigned numCoords, float r, unsign
 		g_tempNormals[j*2+1] = -dx;
 	}
 
-	float colf[4] = { (float) (col&0xff) / 255.f, (float) ((col>>8)&0xff) / 255.f, (float) ((col>>16)&0xff) / 255.f, (float) ((col>>24)&0xff) / 255.f};
-	float colTransf[4] = { (float) (col&0xff) / 255.f, (float) ((col>>8)&0xff) / 255.f, (float) ((col>>16)&0xff) / 255.f, 0};
-
 	for (unsigned i = 0, j = numCoords-1; i < numCoords; j=i++)
 	{
 		float dlx0 = g_tempNormals[j*2+0];
@@ -103,10 +96,10 @@ static void drawPolygon(const float* coords, unsigned numCoords, float r, unsign
 		float dly1 = g_tempNormals[i*2+1];
 		float dmx = (dlx0 + dlx1) * 0.5f;
 		float dmy = (dly0 + dly1) * 0.5f;
-		float   dmr2 = dmx*dmx + dmy*dmy;
+		float	dmr2 = dmx*dmx + dmy*dmy;
 		if (dmr2 > 0.000001f)
 		{
-			float   scale = 1.0f / dmr2;
+			float	scale = 1.0f / dmr2;
 			if (scale > 10.0f) scale = 10.0f;
 			dmx *= scale;
 			dmy *= scale;
@@ -115,120 +108,35 @@ static void drawPolygon(const float* coords, unsigned numCoords, float r, unsign
 		g_tempCoords[i*2+1] = coords[i*2+1]+dmy*r;
 	}
 
-	int vSize = numCoords * 12 + (numCoords - 2) * 6;
-	int uvSize = numCoords * 2 * 6 + (numCoords - 2) * 2 * 3;
-	int cSize = numCoords * 4 * 6 + (numCoords - 2) * 4 * 3;
-	float * v = g_tempVertices;
-	float * uv = g_tempTextureCoords;
-	memset(uv, 0, uvSize * sizeof(float));
-	float * c = g_tempColors;
-	memset(c, 1, cSize * sizeof(float));
+	unsigned int colTrans = RGBA(col&0xff, (col>>8)&0xff, (col>>16)&0xff, 0);
 
-	float * ptrV = v;
-	float * ptrC = c;
+	glBegin(GL_TRIANGLES);
+
+	glColor4ubv((GLubyte*)&col);
+
 	for (unsigned i = 0, j = numCoords-1; i < numCoords; j=i++)
 	{
-		*ptrV = coords[i*2];
-		*(ptrV+1) = coords[i*2 + 1];
-		ptrV += 2;
-		*ptrV = coords[j*2];
-		*(ptrV+1) = coords[j*2 + 1];
-		ptrV += 2;          
-		*ptrV = g_tempCoords[j*2];
-		*(ptrV+1) = g_tempCoords[j*2 + 1];
-		ptrV += 2;                     
-		*ptrV = g_tempCoords[j*2];
-		*(ptrV+1) = g_tempCoords[j*2 + 1];
-		ptrV += 2;                     
-		*ptrV = g_tempCoords[i*2];
-		*(ptrV+1) = g_tempCoords[i*2 + 1];
-		ptrV += 2;                     
-		*ptrV = coords[i*2];
-		*(ptrV+1) = coords[i*2 + 1];            
-		ptrV += 2;
+		glVertex2fv(&coords[i*2]);
+		glVertex2fv(&coords[j*2]);
+		glColor4ubv((GLubyte*)&colTrans);
+		glVertex2fv(&g_tempCoords[j*2]);
 
-		*ptrC = colf[0];
-		*(ptrC+1) = colf[1];
-		*(ptrC+2) = colf[2];
-		*(ptrC+3) = colf[3];
-		ptrC += 4;
-		*ptrC = colf[0];
-		*(ptrC+1) = colf[1];
-		*(ptrC+2) = colf[2];
-		*(ptrC+3) = colf[3];
-		ptrC += 4;
-		*ptrC = colTransf[0];
-		*(ptrC+1) = colTransf[1];
-		*(ptrC+2) = colTransf[2];
-		*(ptrC+3) = colTransf[3];
-		ptrC += 4;
-		*ptrC = colTransf[0];
-		*(ptrC+1) = colTransf[1];
-		*(ptrC+2) = colTransf[2];
-		*(ptrC+3) = colTransf[3];
-		ptrC += 4;
-		*ptrC = colTransf[0];
-		*(ptrC+1) = colTransf[1];
-		*(ptrC+2) = colTransf[2];
-		*(ptrC+3) = colTransf[3];
-		ptrC += 4;
-		*ptrC = colf[0];
-		*(ptrC+1) = colf[1];
-		*(ptrC+2) = colf[2];
-		*(ptrC+3) = colf[3];
-		ptrC += 4;
+		glVertex2fv(&g_tempCoords[j*2]);
+		glVertex2fv(&g_tempCoords[i*2]);
+
+		glColor4ubv((GLubyte*)&col);
+		glVertex2fv(&coords[i*2]);
 	}
 
+	glColor4ubv((GLubyte*)&col);
 	for (unsigned i = 2; i < numCoords; ++i)
 	{
-		*ptrV = coords[0];
-		*(ptrV+1) = coords[1];
-		ptrV += 2;
-		*ptrV = coords[(i-1)*2];
-		*(ptrV+1) = coords[(i-1)*2+1];
-		ptrV += 2;  
-		*ptrV = coords[i*2];
-		*(ptrV+1) = coords[i*2 + 1];            
-		ptrV += 2;            
+		glVertex2fv(&coords[0]);
+		glVertex2fv(&coords[(i-1)*2]);
+		glVertex2fv(&coords[i*2]);
+	}
 
-		*ptrC = colf[0];
-		*(ptrC+1) = colf[1];
-		*(ptrC+2) = colf[2];
-		*(ptrC+3) = colf[3];
-		ptrC += 4;
-		*ptrC = colf[0];
-		*(ptrC+1) = colf[1];
-		*(ptrC+2) = colf[2];
-		*(ptrC+3) = colf[3];
-		ptrC += 4;
-		*ptrC = colf[0];
-		*(ptrC+1) = colf[1];
-		*(ptrC+2) = colf[2];
-		*(ptrC+3) = colf[3];
-		ptrC += 4;          
-	}        
-	glBindTexture(GL_TEXTURE_2D, g_whitetex);
-
-//	glBindVertexArrayOES(g_vao);
-
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-
-	glBindBuffer(GL_ARRAY_BUFFER, g_vbos[0]);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*2, (void*)0);
-	glBufferData(GL_ARRAY_BUFFER, vSize*sizeof(float), v, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, g_vbos[1]);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*2, (void*)0);
-	glBufferData(GL_ARRAY_BUFFER, uvSize*sizeof(float), uv, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, g_vbos[2]);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*4, (void*)0);
-	glBufferData(GL_ARRAY_BUFFER, cSize*sizeof(float), c, GL_STATIC_DRAW);
-	glDrawArrays(GL_TRIANGLES, 0, (numCoords * 2 + numCoords - 2)*3);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
+	glEnd();
 }
 
 static void drawRect(float x, float y, float w, float h, float fth, unsigned int col)
@@ -246,17 +154,17 @@ static void drawRect(float x, float y, float w, float h, float fth, unsigned int
 /*
 static void drawEllipse(float x, float y, float w, float h, float fth, unsigned int col)
 {
-float verts[CIRCLE_VERTS*2];
-const float* cverts = g_circleVerts;
-float* v = verts;
+	float verts[CIRCLE_VERTS*2];
+	const float* cverts = g_circleVerts;
+	float* v = verts;
 
-for (int i = 0; i < CIRCLE_VERTS; ++i)
-{
-*v++ = x + cverts[i*2]*w;
-*v++ = y + cverts[i*2+1]*h;
-}
+	for (int i = 0; i < CIRCLE_VERTS; ++i)
+	{
+		*v++ = x + cverts[i*2]*w;
+		*v++ = y + cverts[i*2+1]*h;
+	}
 
-drawPolygon(verts, CIRCLE_VERTS, fth, col);
+	drawPolygon(verts, CIRCLE_VERTS, fth, col);
 }
 */
 
@@ -333,7 +241,7 @@ static void drawLine(float x0, float y0, float x1, float y1, float r, float fth,
 
 	drawPolygon(verts, 4, fth, col);
 }
-extern void printShaderError( const char* name, unsigned int s );
+
 
 bool imguiRenderGLInit(const char* fontpath)
 {
@@ -348,10 +256,10 @@ bool imguiRenderGLInit(const char* fontpath)
 	FILE* fp = fopen(fontpath, "rb");
 	if (!fp) return false;
 	fseek(fp, 0, SEEK_END);
-	long size = ftell(fp);
+	int size = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
-	unsigned char* ttfBuffer = (unsigned char*)malloc(size); 
+	unsigned char* ttfBuffer = (unsigned char*)malloc(size);
 	if (!ttfBuffer)
 	{
 		fclose(fp);
@@ -374,90 +282,9 @@ bool imguiRenderGLInit(const char* fontpath)
 	// can free ttf_buffer at this point
 	glGenTextures(1, &g_ftex);
 	glBindTexture(GL_TEXTURE_2D, g_ftex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 512,512, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, bmap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, 512,512, 0, GL_ALPHA, GL_UNSIGNED_BYTE, bmap);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// can free ttf_buffer at this point
-	unsigned char white_alpha = 255;
-	glGenTextures(1, &g_whitetex);
-	glBindTexture(GL_TEXTURE_2D, g_whitetex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 1, 1, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, &white_alpha);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-//	glGenVertexArraysOES(1, &g_vao);
-	glGenBuffers(3, g_vbos);
-
-//	glBindVertexArrayOES(g_vao);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-
-	glBindBuffer(GL_ARRAY_BUFFER, g_vbos[0]);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*2, (void*)0);
-	glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, g_vbos[1]);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*2, (void*)0);
-	glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, g_vbos[2]);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*4, (void*)0);
-	glBufferData(GL_ARRAY_BUFFER, 0, 0, GL_STATIC_DRAW);
-	g_program = glCreateProgram();
-
-	const char * vs =
-		"uniform vec2 Viewport;\n"
-		"attribute vec2 VertexPosition;\n"
-		"attribute vec2 VertexTexCoord;\n"
-		"attribute vec4 VertexColor;\n"
-		"varying vec2 texCoord;\n"
-		"varying vec4 vertexColor;\n"
-		"void main(void)\n"
-		"{\n"
-		"    vertexColor = VertexColor;\n"
-		"    texCoord = VertexTexCoord;\n"
-		"    gl_Position = vec4(VertexPosition * 2.0 / Viewport - 1.0, 0.0, 1.0);\n"
-		"}\n";
-	GLuint vso = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vso, 1, (const char **)  &vs, NULL);
-	glCompileShader(vso);
-	glAttachShader(g_program, vso);
-    
-	const char * fs =
-		//"precision highp float;\n"
-		"varying vec2 texCoord;\n"
-		"varying vec4 vertexColor;\n"
-		"uniform sampler2D Texture;\n"
-		//"out vec4  Color;\n"
-		"void main(void)\n"
-		"{\n"
-		"    float alpha = texture2D(Texture, texCoord).r;\n"
-		//"    Color = vec4(vertexColor.rgb, vertexColor.a * alpha);\n"
-		"    gl_FragColor = vec4(vertexColor.rgb, vertexColor.a * alpha);\n"
-		"}\n";
-	GLuint fso = glCreateShader(GL_FRAGMENT_SHADER);
-
-	glShaderSource(fso, 1, (const char **) &fs, NULL);
-	glCompileShader(fso);
-	glAttachShader(g_program, fso);
-
-	printShaderError("ui vs", vso);
-	printShaderError("ui fs", fso);
-
-	glBindAttribLocation(g_program,  0,  "VertexPosition");
-	glBindAttribLocation(g_program,  1,  "VertexTexCoord");
-	glBindAttribLocation(g_program,  2,  "VertexColor");
-	//glBindFragDataLocation(g_program, 0, "Color");
-	glLinkProgram(g_program);
-	glDeleteShader(vso);
-	glDeleteShader(fso);
-
-	glUseProgram(g_program);
-	g_programViewportLocation = glGetUniformLocation(g_program, "Viewport");
-	g_programTextureLocation = glGetUniformLocation(g_program, "Texture");
-
-	glUseProgram(0);
-
 
 	free(ttfBuffer);
 	free(bmap);
@@ -472,20 +299,6 @@ void imguiRenderGLDestroy()
 		glDeleteTextures(1, &g_ftex);
 		g_ftex = 0;
 	}
-
-	if (g_vao)
-	{
-//		glDeleteVertexArraysOES(1, &g_vao);
-		glDeleteBuffers(3, g_vbos);
-		g_vao = 0;
-	}
-
-	if (g_program)
-	{
-		glDeleteProgram(g_program);
-		g_program = 0;
-	}
-
 }
 
 static void getBakedQuad(stbtt_bakedchar *chardata, int pw, int ph, int char_index,
@@ -550,19 +363,17 @@ static void drawText(float x, float y, const char *text, int align, unsigned int
 	else if (align == IMGUI_ALIGN_RIGHT)
 		x -= getTextLength(g_cdata, text);
 
-	float r = (float) (col&0xff) / 255.f;
-	float g = (float) ((col>>8)&0xff) / 255.f;
-	float b = (float) ((col>>16)&0xff) / 255.f;
-	float a = (float) ((col>>24)&0xff) / 255.f;
+	glColor4ub(col&0xff, (col>>8)&0xff, (col>>16)&0xff, (col>>24)&0xff);
+
+	glEnable(GL_TEXTURE_2D);
 
 	// assume orthographic projection with units = screen pixels, origin at top left
 	glBindTexture(GL_TEXTURE_2D, g_ftex);
 
+	glBegin(GL_TRIANGLES);
+
 	const float ox = x;
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
 	while (*text)
 	{
 		int c = (unsigned char)*text;
@@ -578,57 +389,30 @@ static void drawText(float x, float y, const char *text, int align, unsigned int
 			}
 		}
 		else if (c >= 32 && c < 128)
-		{                       
+		{
 			stbtt_aligned_quad q;
 			getBakedQuad(g_cdata, 512,512, c-32, &x,&y,&q);
 
-			float v[12] = {
-				q.x0, q.y0, 
-				q.x1, q.y1,
-				q.x1, q.y0, 
-				q.x0, q.y0,
-				q.x0, q.y1, 
-				q.x1, q.y1, 
-			};
-			float uv[12] = {
-				q.s0, q.t0,
-				q.s1, q.t1,
-				q.s1, q.t0,
-				q.s0, q.t0, 
-				q.s0, q.t1, 
-				q.s1, q.t1, 
-			};
-			float c[24] = {
-				r, g, b, a,
-				r, g, b, a,
-				r, g, b, a,
-				r, g, b, a,
-				r, g, b, a,
-				r, g, b, a,
-			};
-//			glBindVertexArrayOES(g_vao);
-			glBindBuffer(GL_ARRAY_BUFFER, g_vbos[0]);
-			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*2, (void*)0);
-			glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), v, GL_STATIC_DRAW);
-			glBindBuffer(GL_ARRAY_BUFFER, g_vbos[1]);
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*2, (void*)0);
-			glBufferData(GL_ARRAY_BUFFER, 12*sizeof(float), uv, GL_STATIC_DRAW);
-			glBindBuffer(GL_ARRAY_BUFFER, g_vbos[2]);
-			glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*4, (void*)0);
-			glBufferData(GL_ARRAY_BUFFER, 24*sizeof(float), c, GL_STATIC_DRAW);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glTexCoord2f(q.s0, q.t0);
+			glVertex2f(q.x0, q.y0);
+			glTexCoord2f(q.s1, q.t1);
+			glVertex2f(q.x1, q.y1);
+			glTexCoord2f(q.s1, q.t0);
+			glVertex2f(q.x1, q.y0);
 
+			glTexCoord2f(q.s0, q.t0);
+			glVertex2f(q.x0, q.y0);
+			glTexCoord2f(q.s0, q.t1);
+			glVertex2f(q.x0, q.y1);
+			glTexCoord2f(q.s1, q.t1);
+			glVertex2f(q.x1, q.y1);
 		}
 		++text;
 	}
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	//glEnd();        
-	//glDisable(GL_TEXTURE_2D);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 }
-
 
 void imguiRenderGLDraw(int width, int height)
 {
@@ -636,14 +420,6 @@ void imguiRenderGLDraw(int width, int height)
 	int nq = imguiGetRenderQueueSize();
 
 	const float s = 1.0f/8.0f;
-
-	glViewport(0, 0, width, height);
-	glUseProgram(g_program);
-	glUniform2f(g_programViewportLocation, (float) width, (float) height);
-	glUniform1i(g_programTextureLocation, 0);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 	glDisable(GL_SCISSOR_TEST);
 	for (int i = 0; i < nq; ++i)
@@ -654,14 +430,14 @@ void imguiRenderGLDraw(int width, int height)
 			if (cmd.rect.r == 0)
 			{
 				drawRect((float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f,
-					(float)cmd.rect.w*s-1, (float)cmd.rect.h*s-1,
-					1.0f, cmd.col);
+						 (float)cmd.rect.w*s-1, (float)cmd.rect.h*s-1,
+						 1.0f, cmd.col);
 			}
 			else
 			{
 				drawRoundedRect((float)cmd.rect.x*s+0.5f, (float)cmd.rect.y*s+0.5f,
-					(float)cmd.rect.w*s-1, (float)cmd.rect.h*s-1,
-					(float)cmd.rect.r*s, 1.0f, cmd.col);
+								(float)cmd.rect.w*s-1, (float)cmd.rect.h*s-1,
+								(float)cmd.rect.r*s, 1.0f, cmd.col);
 			}
 		}
 		else if (cmd.type == IMGUI_GFXCMD_LINE)
@@ -709,6 +485,4 @@ void imguiRenderGLDraw(int width, int height)
 		}
 	}
 	glDisable(GL_SCISSOR_TEST);
-
-	glDisable(GL_BLEND);
 }

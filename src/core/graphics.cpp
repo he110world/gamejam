@@ -124,6 +124,12 @@ int initGraphics( int w, int h, int fullscreen )
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 #endif
 
+#ifdef GL_OS_OSX
+    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#endif
+    
 	g_window = SDL_CreateWindow(NULL, 100, 100, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN/* | SDL_WINDOW_BORDERLESS*/ | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 
 #ifdef GJ_OS_WINDOWS

@@ -6,7 +6,7 @@
 	#if (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) || defined(__IPHONE_OS_VERSION_MIN_REQUIRED))
 		#define GJ_OS_IOS
 	#else
-		#define GJ_OS_MAC
+		#define GL_OS_OSX
 	#endif
 #elif defined(WIN64) || defined(_WIN64) || defined(__WIN64__)
 	#define GJ_OS_WIN64

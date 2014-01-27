@@ -1,15 +1,3 @@
-/*
-* This code was created by Jeff Molofee '99 
-* (ported to Linux/SDL by Ti Leggett '01)
-*
-* If you've found this code useful, please let me know.
-*
-* Visit Jeff at http://nehe.gamedev.net/
-* 
-* or for port-specific comments, questions, bugreports etc. 
-* email to leggett@eecs.tulane.edu
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
@@ -24,7 +12,11 @@
 #include <curl/curl.h>
 #include "graphics.h"
 #include "imgui.h"
+//#ifdef GL_OS_OSX
+//#include "imguiRenderGL3.h"
+//#else
 #include "imguiRenderGLES2.h"
+//#endif
 #include "render.h"
 #include <libtcc.h>
 
@@ -62,7 +54,7 @@ public:
 			//			printf("add %s\n", filename.c_str());
 			//			break;
 		case FW::Actions::Modified:
-			if( filename == "update.c" )
+            if( filename.find("update.c")!=std::string::npos )
 			{
 				recompile();		
 			}
@@ -187,6 +179,8 @@ int initGL()
 
 	/* The Type Of Depth Test To Do */
 	glDepthFunc( GL_LEQUAL );
+
+    glViewport( 0, 0, ( GLsizei )800, ( GLsizei )600 );
 
 	/* Really Nice Perspective Calculations */
 //	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
@@ -377,8 +371,10 @@ int main(int argc, char **argv)
 				handleKeyPress( &event.key.keysym );
 				break;
 			case SDL_KEYUP:
-				keystat[event.key.keysym.sym] = 0;
-				break;
+                    if(event.key.keysym.sym<=255){
+                        keystat[event.key.keysym.sym] = 0;
+                    }
+                    break;
 			case SDL_MOUSEMOTION:
 				mousexr = event.motion.xrel;
 				mouseyr = event.motion.yrel;
@@ -404,13 +400,37 @@ int main(int argc, char **argv)
 		//if ( isActive )
 		{
 			watcher->update();
-
+            
+            //glClearColor(1, 0, 0, 1);
+            //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+            
 			if(update)
 			{
 				update();
 			}
-
-			imguiRenderGLDraw(800, 600); 
+            /*
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            float projection[16] = { 2.f/800, 0.f, 0.f,  0.f,
+                0.f, 2.f/600,  0.f,  0.f,
+                0.f,  0.f, -2.f, 0.f,
+                -1.f, -1.f,  -1.f,  1.f };
+            glLoadMatrixf(projection);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();*/
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glDisable(GL_DEPTH_TEST);
+			imguiRenderGLDraw(800, 600);
+            
+/*
+            glBegin(GL_TRIANGLES);
+            glColor3f(1, 1, 0);
+            glVertex2d(1, 1);
+            glVertex2d(1, 0);
+            glVertex2d(0, 1);
+            glEnd();
+*/
 			/* Draw it to the screen */
 			swapBuffers();
 			

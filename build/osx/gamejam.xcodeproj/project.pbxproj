@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		18358F8517BA93DF009B3835 /* i386-asm.c in Sources */ = {isa = PBXBuildFile; fileRef = 18358F6D17BA93DF009B3835 /* i386-asm.c */; };
-		18358F8617BA93DF009B3835 /* i386-gen.c in Sources */ = {isa = PBXBuildFile; fileRef = 18358F6F17BA93DF009B3835 /* i386-gen.c */; };
 		18358F8817BA93DF009B3835 /* libtcc.c in Sources */ = {isa = PBXBuildFile; fileRef = 18358F7317BA93DF009B3835 /* libtcc.c */; };
 		18358F8A17BA93DF009B3835 /* tccasm.c in Sources */ = {isa = PBXBuildFile; fileRef = 18358F7817BA93DF009B3835 /* tccasm.c */; };
 		18358F8C17BA93DF009B3835 /* tccelf.c in Sources */ = {isa = PBXBuildFile; fileRef = 18358F7A17BA93DF009B3835 /* tccelf.c */; };
@@ -20,7 +19,6 @@
 		1878786117AE846C004E903B /* gamejam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878784A17AE846C004E903B /* gamejam.cpp */; };
 		1878786217AE846C004E903B /* graphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878784B17AE846C004E903B /* graphics.cpp */; };
 		1878786317AE846C004E903B /* imgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878784D17AE846C004E903B /* imgui.cpp */; };
-		1878786417AE846C004E903B /* imguiRenderGLES2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878784F17AE846C004E903B /* imguiRenderGLES2.cpp */; };
 		1878786517AE846C004E903B /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878785117AE846C004E903B /* model.cpp */; };
 		1878786617AE846C004E903B /* render.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878785417AE846C004E903B /* render.cpp */; };
 		1878786717AE846C004E903B /* resource_cache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878785617AE846C004E903B /* resource_cache.cpp */; };
@@ -29,7 +27,9 @@
 		1878786A17AE846C004E903B /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878785D17AE846C004E903B /* texture.cpp */; };
 		1878787517AE847B004E903B /* FileWatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878786C17AE847B004E903B /* FileWatcher.cpp */; };
 		1878787717AE847B004E903B /* FileWatcherOSX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1878787117AE847B004E903B /* FileWatcherOSX.cpp */; };
-		18C3F19517AEB50000258EB0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18C3F19417AEB50000258EB0 /* OpenGL.framework */; };
+		189CC8F8187808BB008F9FC7 /* imguiRenderGLES2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 189CC8F6187808BB008F9FC7 /* imguiRenderGLES2.cpp */; };
+		18ABE111186593B900FAB545 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18ABE110186593B900FAB545 /* SDL2.framework */; };
+		18AF3E281876A74600A9B61F /* x86_64-gen.c in Sources */ = {isa = PBXBuildFile; fileRef = 18AF3E271876A74600A9B61F /* x86_64-gen.c */; };
 		18C3F19717AEB53600258EB0 /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 18C3F19617AEB53600258EB0 /* libcurl.dylib */; };
 /* End PBXBuildFile section */
 
@@ -51,7 +51,6 @@
 		18358F6C17BA93DF009B3835 /* elf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = elf.h; sourceTree = "<group>"; };
 		18358F6D17BA93DF009B3835 /* i386-asm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "i386-asm.c"; sourceTree = "<group>"; };
 		18358F6E17BA93DF009B3835 /* i386-asm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "i386-asm.h"; sourceTree = "<group>"; };
-		18358F6F17BA93DF009B3835 /* i386-gen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "i386-gen.c"; sourceTree = "<group>"; };
 		18358F7017BA93DF009B3835 /* i386-tok.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "i386-tok.h"; sourceTree = "<group>"; };
 		18358F7317BA93DF009B3835 /* libtcc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libtcc.c; sourceTree = "<group>"; };
 		18358F7417BA93DF009B3835 /* libtcc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libtcc.h; sourceTree = "<group>"; };
@@ -72,8 +71,6 @@
 		1878784C17AE846C004E903B /* graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graphics.h; sourceTree = "<group>"; };
 		1878784D17AE846C004E903B /* imgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = imgui.cpp; sourceTree = "<group>"; };
 		1878784E17AE846C004E903B /* imgui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imgui.h; sourceTree = "<group>"; };
-		1878784F17AE846C004E903B /* imguiRenderGLES2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = imguiRenderGLES2.cpp; sourceTree = "<group>"; };
-		1878785017AE846C004E903B /* imguiRenderGLES2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imguiRenderGLES2.h; sourceTree = "<group>"; };
 		1878785117AE846C004E903B /* model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = model.cpp; sourceTree = "<group>"; };
 		1878785217AE846C004E903B /* model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = model.h; sourceTree = "<group>"; };
 		1878785317AE846C004E903B /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
@@ -93,8 +90,12 @@
 		1878786E17AE847B004E903B /* FileWatcherImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWatcherImpl.h; sourceTree = "<group>"; };
 		1878787117AE847B004E903B /* FileWatcherOSX.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileWatcherOSX.cpp; sourceTree = "<group>"; };
 		1878787217AE847B004E903B /* FileWatcherOSX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWatcherOSX.h; sourceTree = "<group>"; };
+		189CC8F6187808BB008F9FC7 /* imguiRenderGLES2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = imguiRenderGLES2.cpp; sourceTree = "<group>"; };
+		189CC8F7187808BB008F9FC7 /* imguiRenderGLES2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imguiRenderGLES2.h; sourceTree = "<group>"; };
+		18ABE110186593B900FAB545 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		18AF3E271876A74600A9B61F /* x86_64-gen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "x86_64-gen.c"; sourceTree = "<group>"; };
+		18AF3E291876A76200A9B61F /* x86_64-asm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "x86_64-asm.h"; sourceTree = "<group>"; };
 		18C3F19217AEB37C00258EB0 /* libtcc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libtcc.h; path = ../../include/libtcc.h; sourceTree = "<group>"; };
-		18C3F19417AEB50000258EB0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		18C3F19617AEB53600258EB0 /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = usr/lib/libcurl.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -103,8 +104,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18ABE111186593B900FAB545 /* SDL2.framework in Frameworks */,
 				18C3F19717AEB53600258EB0 /* libcurl.dylib in Frameworks */,
-				18C3F19517AEB50000258EB0 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,12 +115,13 @@
 		18358F6617BA93DF009B3835 /* tinycc_osx */ = {
 			isa = PBXGroup;
 			children = (
+				18AF3E291876A76200A9B61F /* x86_64-asm.h */,
+				18AF3E271876A74600A9B61F /* x86_64-gen.c */,
 				18358F6917BA93DF009B3835 /* coff.h */,
 				18358F6A17BA93DF009B3835 /* config.h */,
 				18358F6C17BA93DF009B3835 /* elf.h */,
 				18358F6D17BA93DF009B3835 /* i386-asm.c */,
 				18358F6E17BA93DF009B3835 /* i386-asm.h */,
-				18358F6F17BA93DF009B3835 /* i386-gen.c */,
 				18358F7017BA93DF009B3835 /* i386-tok.h */,
 				18358F7317BA93DF009B3835 /* libtcc.c */,
 				18358F7417BA93DF009B3835 /* libtcc.h */,
@@ -139,7 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				18C3F19617AEB53600258EB0 /* libcurl.dylib */,
-				18C3F19417AEB50000258EB0 /* OpenGL.framework */,
+				18ABE110186593B900FAB545 /* SDL2.framework */,
 				18C3F19317AEB47900258EB0 /* include */,
 				1878786B17AE847B004E903B /* filewatcher */,
 				1878784517AE846C004E903B /* core */,
@@ -159,6 +161,8 @@
 		1878784517AE846C004E903B /* core */ = {
 			isa = PBXGroup;
 			children = (
+				189CC8F6187808BB008F9FC7 /* imguiRenderGLES2.cpp */,
+				189CC8F7187808BB008F9FC7 /* imguiRenderGLES2.h */,
 				1878784617AE846C004E903B /* background_loader.cpp */,
 				1878784717AE846C004E903B /* background_loader.h */,
 				1878784817AE846C004E903B /* cursor3d.cpp */,
@@ -168,8 +172,6 @@
 				1878784C17AE846C004E903B /* graphics.h */,
 				1878784D17AE846C004E903B /* imgui.cpp */,
 				1878784E17AE846C004E903B /* imgui.h */,
-				1878784F17AE846C004E903B /* imguiRenderGLES2.cpp */,
-				1878785017AE846C004E903B /* imguiRenderGLES2.h */,
 				1878785117AE846C004E903B /* model.cpp */,
 				1878785217AE846C004E903B /* model.h */,
 				1878785317AE846C004E903B /* platform.h */,
@@ -236,7 +238,7 @@
 		187877E717AE7FE7004E903B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = he110world;
 			};
 			buildConfigurationList = 187877EA17AE7FE7004E903B /* Build configuration list for PBXProject "gamejam" */;
@@ -266,17 +268,17 @@
 				1878786117AE846C004E903B /* gamejam.cpp in Sources */,
 				1878786217AE846C004E903B /* graphics.cpp in Sources */,
 				1878786317AE846C004E903B /* imgui.cpp in Sources */,
-				1878786417AE846C004E903B /* imguiRenderGLES2.cpp in Sources */,
 				1878786517AE846C004E903B /* model.cpp in Sources */,
 				1878786617AE846C004E903B /* render.cpp in Sources */,
 				1878786717AE846C004E903B /* resource_cache.cpp in Sources */,
 				1878786817AE846C004E903B /* shader.cpp in Sources */,
+				189CC8F8187808BB008F9FC7 /* imguiRenderGLES2.cpp in Sources */,
 				1878786917AE846C004E903B /* stb_image.cpp in Sources */,
 				1878786A17AE846C004E903B /* texture.cpp in Sources */,
 				1878787517AE847B004E903B /* FileWatcher.cpp in Sources */,
 				1878787717AE847B004E903B /* FileWatcherOSX.cpp in Sources */,
+				18AF3E281876A74600A9B61F /* x86_64-gen.c in Sources */,
 				18358F8517BA93DF009B3835 /* i386-asm.c in Sources */,
-				18358F8617BA93DF009B3835 /* i386-gen.c in Sources */,
 				18358F8817BA93DF009B3835 /* libtcc.c in Sources */,
 				18358F8A17BA93DF009B3835 /* tccasm.c in Sources */,
 				18358F8C17BA93DF009B3835 /* tccelf.c in Sources */,
@@ -293,7 +295,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -319,12 +320,12 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = GameJam;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "";
-				VALID_ARCHS = "i386 x86_64";
+				VALID_ARCHS = i386;
 			};
 			name = Debug;
 		};
@@ -332,7 +333,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -356,41 +356,63 @@
 				PRODUCT_NAME = GameJam;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "";
-				VALID_ARCHS = "i386 x86_64";
+				VALID_ARCHS = i386;
 			};
 			name = Release;
 		};
 		187877F917AE7FE7004E903B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\\\"",
 					/Users/apple/lab/gamejam/lib,
+					/Users/apple/lab/gamejam/build/osx,
+					/Users/apple/lab/gamejam/Frameworks,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../src/core\"",
 					"\"$(SRCROOT)/../../../tinycc\"",
 				);
+				OTHER_CFLAGS = "-DTCC_TARGET_X86_64=1";
+				OTHER_LDFLAGS = (
+					"-framework",
+					OpenGL,
+					"-framework",
+					Cocoa,
+				);
 				PRODUCT_NAME = gamejam;
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
 		187877FA17AE7FE7004E903B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\\\"",
 					/Users/apple/lab/gamejam/lib,
+					/Users/apple/lab/gamejam/build/osx,
+					/Users/apple/lab/gamejam/Frameworks,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../src/core\"",
 					"\"$(SRCROOT)/../../../tinycc\"",
 				);
+				OTHER_CFLAGS = "-DTCC_TARGET_X86_64=1";
+				OTHER_LDFLAGS = (
+					"-framework",
+					OpenGL,
+					"-framework",
+					Cocoa,
+				);
 				PRODUCT_NAME = gamejam;
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
